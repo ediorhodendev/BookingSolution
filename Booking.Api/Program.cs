@@ -11,22 +11,27 @@ using Booking.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Adicionar serviços ao contêiner.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register database context
+// Registrar contexto do banco de dados
 builder.Services.AddDbContext<YourDbContext>(options =>
     options.UseInMemoryDatabase(databaseName: "BookingDb"));
 
-// Register repositories and services
+// Registrar repositórios e serviços
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>(); // Registrar IVehicleRepository e sua implementação
+builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configurar pipeline de solicitação HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -35,20 +40,24 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Add CORS middleware to allow requests from Angular app
+// Adicionar middleware CORS para permitir solicitações do aplicativo Angular
 app.UseCors(options =>
 {
-    options.WithOrigins("http://localhost:4200") // Allow requests from Angular app
+    options.WithOrigins("http://localhost:4200") // Permitir solicitações do aplicativo Angular
            .AllowAnyMethod()
            .AllowAnyHeader();
 });
 
-// Seed data on application start
+// Semente de dados no início da aplicação
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var dbContext = services.GetRequiredService<YourDbContext>();
-    SeedData.PopulateData(new BookingRepository(dbContext));
+    var bookingRepository = services.GetRequiredService<IBookingRepository>();
+    var customerRepository = services.GetRequiredService<ICustomerRepository>();
+    var vehicleRepository = services.GetRequiredService<IVehicleRepository>();
+
+    SeedData.PopulateData(bookingRepository, customerRepository, vehicleRepository);
 }
 
 app.MapControllers();

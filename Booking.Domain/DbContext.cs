@@ -11,7 +11,9 @@ namespace Booking.Infrastructure
         }
 
         public DbSet<BookingModel> Bookings { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
 
+        public DbSet<Customer> Customers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             

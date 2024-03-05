@@ -2,6 +2,7 @@ using System;
 
 namespace Booking.Domain.Entities
 {
+
     public class BookingModel
     {
         public int Id { get; set; }
@@ -11,5 +12,11 @@ namespace Booking.Domain.Entities
         public int VehicleId { get; set; }
         public bool? RatingStatus { get; set; }
         public bool? CommentStatus { get; set; }
+        public virtual Customer Customer { get; set; }
+        public virtual Vehicle Vehicle { get; set; }
     }
+
 }
+
+
+
